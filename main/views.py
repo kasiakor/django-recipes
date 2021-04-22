@@ -14,6 +14,8 @@ def home(request):
 def search(request):
 	recipes = Recipe.objects.all()
 
+	# search?breakfast=on&search=Cookies
+
 	if 'search' in request.GET:
 		# we need to get the object the user is searching for
 		query = request.GET.get('search')
@@ -22,10 +24,18 @@ def search(request):
 
 	if request.GET.get('breakfast'):
 		# filter results by category selected by user
-		result = queryset.filter(Q(topic__title__icontains='breakfast'))
+		results = queryset.filter(Q(topic__title__icontains='breakfast'))
 
 		print('\n\n\n')
-		print(result)
+		print(results)
 
-	context = {}
+	context = {
+	'total': results.count(),
+	'query': query,
+	'results': results,
+
+	}
 	return render(request, 'search.html', context)
+
+def detail(request, slug):
+	return render(request, 'detail.html', {})

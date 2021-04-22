@@ -1,6 +1,6 @@
 from django.db import models
-
 from autoslug import AutoSlugField
+from django.shortcuts import reverse
 
 class Topic(models.Model):
 	title = models.CharField(max_length=200)
@@ -27,3 +27,9 @@ class Recipe(models.Model):
 
 	def __str__(self):
 		return self.title
+
+
+	def get_url(self):
+		return reverse('detail', kwargs= {
+			'slug': self.slug,
+			})
