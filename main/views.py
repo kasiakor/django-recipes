@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from .models import Recipe
 from django.db.models import Q
+from django.core.paginator import PageNotAnInteger, Paginator, EmptyPage
+
+
 # Create your views here.
 def home(request):
 	total_recipes = Recipe.objects.all().count()
@@ -25,12 +28,66 @@ def search(request):
 	if request.GET.get('breakfast'):
 		# filter results by category selected by user
 		results = queryset.filter(Q(topic__title__icontains='breakfast'))
+		topic = 'breakfast'
 
-		print('\n\n\n')
-		print(results)
+	elif request.GET.get('appetizers'):
+		# filter results by category selected by user
+		results = queryset.filter(Q(topic__title__icontains='appetizers'))
+		topic = 'appetizers'
+
+	elif request.GET.get('lunch'):
+		# filter results by category selected by user
+		results = queryset.filter(Q(topic__title__icontains='lunch'))
+		topic = 'lunch'
+
+	elif request.GET.get('salads'):
+		# filter results by category selected by user
+		results = queryset.filter(Q(topic__title__icontains='salads'))
+		topic = 'salads'
+
+	elif request.GET.get('dinner'):
+		# filter results by category selected by user
+		results = queryset.filter(Q(topic__title__icontains='dinner'))
+		topic = 'dinner'
+
+	elif request.GET.get('dessert'):
+		# filter results by category selected by user
+		results = queryset.filter(Q(topic__title__icontains='dessert'))
+		topic = 'dessert'
+
+	elif request.GET.get('easy'):
+		# filter results by category selected by user
+		results = queryset.filter(Q(topic__title__icontains='easy'))
+		topic = 'easy'
+
+	elif request.GET.get('hard'):
+		# filter results by category selected by user
+		results = queryset.filter(Q(topic__title__icontains='hard'))
+		topic = 'hard'
+
+	total = results.count()
+
+	# paginate result
+	# define paginator object
+	paginator = Paginator(results, 3)
+
+	# get number of the curent page
+	page = request.GET.get('page')
+
+	# create results page object
+	try:
+		results = paginator.page(page)
+	except PageNotAnInteger:
+		# display first page
+		results = paginator.page(1)
+	except EmptyPage:
+		# display last page
+		results = paginator.page(paginator.num_pages)
 
 	context = {
-	'total': results.count(),
+	'topic': topic,
+	'page': page,
+	'total': total,
 	'query': query,
 	'results': results,
 
